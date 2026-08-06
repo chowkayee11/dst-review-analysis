@@ -2,7 +2,7 @@
 
 A Python data analysis and text classification project based on recent Steam reviews for **Don't Starve Together**.
 
-The project covers data collection, data cleaning, exploratory data analysis, rule-based text theme analysis, TF-IDF feature extraction, and logistic regression classification.
+The project covers data collection, data cleaning, exploratory data analysis, rule-based text theme analysis, TF-IDF feature extraction, model comparison, cross-validation, and logistic regression interpretation.
 
 ## Project Overview
 
@@ -25,7 +25,7 @@ Steam reviews contain both recommendation labels and detailed player behaviour d
 - Review period: 25 November 2025 to 5 August 2026
 - Overall positive rate: `90.71%`
 
-The data was collected using the Steam review endpoint. The repository does not include the full raw review-text dataset. It can be regenerated using the collection script.
+The data was collected using the Steam review endpoint. For public sharing, the raw review-text files can be excluded and regenerated with the collection script.
 
 ## Project Workflow
 
@@ -37,6 +37,7 @@ The data was collected using the Steam review endpoint. The repository does not 
 6. Compare positive and negative review themes
 7. Build a TF-IDF logistic regression classifier
 8. Evaluate the model and inspect classification errors
+9. Re-run model evaluation through a reproducible training script
 
 ## Key Findings
 
@@ -140,7 +141,7 @@ The results suggest that difficulty is not always viewed negatively. Challenge a
 
 ## Text Classification
 
-A TF-IDF logistic regression model was trained to predict whether a review was recommended.
+A TF-IDF logistic regression model was trained to predict whether a review was recommended. A separate training script also compares this model with a majority baseline, Multinomial Naive Bayes, and Linear SVM.
 
 The dataset was split into an 80% training set and a 20% test set using stratified sampling. Balanced class weights were applied because negative reviews were the minority class.
 
@@ -158,6 +159,8 @@ The dataset was split into an 80% training set and a 20% test set using stratifi
 The baseline model achieved high accuracy by predicting every review as positive. It failed to identify any negative reviews.
 
 The logistic regression model correctly identified 57 of the 84 negative reviews in the test set. Its negative recall reached 67.9%, and its macro F1-score increased to 0.712.
+
+In the scripted model comparison, Linear SVM achieved the strongest holdout macro F1 among the tested text models, while Logistic Regression achieved the highest negative-review recall. This trade-off is useful because missing negative reviews is more costly for product-feedback analysis than misclassifying some positive reviews.
 
 ![Confusion matrix](outputs/figures/13_logistic_regression_confusion_matrix.png)
 
@@ -208,7 +211,8 @@ dst-review-analysis/
 │   ├── figures/
 │   └── tables/
 ├── src/
-│   └── collect_reviews.py
+│   ├── collect_reviews.py
+│   └── train_models.py
 ├── .gitignore
 ├── README.md
 └── requirements.txt
@@ -246,10 +250,20 @@ Install dependencies:
 python -m pip install -r requirements.txt
 ```
 
-Collect the Steam reviews:
+Collect the Steam reviews with default settings:
 
 ```bash
 python src/collect_reviews.py
+```
+
+The collection script also supports reusable command-line arguments:
+
+```bash
+python src/collect_reviews.py \
+  --app-id 322330 \
+  --target-reviews 5000 \
+  --language english \
+  --output data/raw/dst_reviews_english_5000.csv
 ```
 
 Start JupyterLab:
@@ -267,6 +281,34 @@ Run the notebooks in this order:
 04_text_analysis.ipynb
 05_text_classification.ipynb
 ```
+
+## Scripted Model Reproduction
+
+The modeling step can be reproduced without opening Jupyter:
+
+```bash
+python src/train_models.py \
+  --input data/processed/dst_reviews_english_text.csv \
+  --tables-dir outputs/tables \
+  --test-size 0.20 \
+  --cv-folds 5
+```
+
+This script trains and compares:
+
+- Majority-class baseline
+- TF-IDF Multinomial Naive Bayes
+- TF-IDF Linear SVM
+- TF-IDF Logistic Regression with balanced class weights
+
+It exports:
+
+- `outputs/tables/engineered_model_comparison.csv`
+- `outputs/tables/engineered_logistic_regression_report.csv`
+- `outputs/tables/engineered_logistic_regression_features.csv`
+- `outputs/tables/engineered_misclassified_reviews.csv`
+
+This scripted path makes the classification result easier to reproduce and gives the project a clearer engineering workflow beyond exploratory notebooks.
 
 ## Limitations
 

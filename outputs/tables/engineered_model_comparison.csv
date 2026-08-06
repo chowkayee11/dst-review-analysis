@@ -1,0 +1,5 @@
+model,accuracy,macro_f1,negative_precision,negative_recall,negative_f1,positive_f1,cv_accuracy_mean,cv_accuracy_std,cv_macro_f1_mean,cv_macro_f1_std,cv_negative_recall_mean,cv_negative_recall_std,cv_negative_f1_mean,cv_negative_f1_std
+Majority baseline,0.907,0.4756,0.0,0.0,0.0,0.9512,0.9073,0.0005,0.4757,0.0001,0.0,0.0,0.0,0.0
+Multinomial NB,0.9081,0.4877,1.0,0.0119,0.0235,0.9518,0.9078,0.0008,0.4805,0.0095,0.0048,0.0095,0.0093,0.0186
+Linear SVM,0.8992,0.736,0.4679,0.6071,0.5285,0.9436,0.9107,0.0077,0.7479,0.0275,0.5815,0.0703,0.5453,0.0509
+TF-IDF Logistic Regression,0.8726,0.7124,0.3931,0.6786,0.4978,0.9271,0.8936,0.0058,0.7429,0.0182,0.6938,0.067,0.5461,0.0339

@@ -1,3 +1,4 @@
+import argparse
 from pathlib import Path
 import time
 
@@ -5,29 +6,32 @@ import pandas as pd
 import requests
 
 
-APP_ID = 322330
-# TARGET_REVIEWS = 200
-TARGET_REVIEWS = 5000
-LANGUAGE = "english"
-
-# OUTPUT_PATH = Path("data/raw/dst_reviews_english_200.csv")
-OUTPUT_PATH = Path("data/raw/dst_reviews_english_5000.csv")
-BASE_URL = f"https://store.steampowered.com/appreviews/{APP_ID}"
+DEFAULT_APP_ID = 322330
+DEFAULT_TARGET_REVIEWS = 5000
+DEFAULT_LANGUAGE = "english"
+DEFAULT_OUTPUT_PATH = Path("data/raw/dst_reviews_english_5000.csv")
+STEAM_REVIEW_URL = "https://store.steampowered.com/appreviews/{app_id}"
 
 
-def fetch_reviews(target_count: int = 200) -> pd.DataFrame:
-    """Collect Steam reviews for Don't Starve Together."""
+def fetch_reviews(
+    app_id: int = DEFAULT_APP_ID,
+    target_count: int = DEFAULT_TARGET_REVIEWS,
+    language: str = DEFAULT_LANGUAGE,
+    delay_seconds: float = 1.0,
+) -> pd.DataFrame:
+    """Collect recent Steam reviews from the public review endpoint."""
 
     collected_reviews = []
     seen_review_ids = set()
     cursor = "*"
+    base_url = STEAM_REVIEW_URL.format(app_id=app_id)
 
     with requests.Session() as session:
         while len(collected_reviews) < target_count:
             params = {
                 "json": 1,
                 "filter": "recent",
-                "language": LANGUAGE,
+                "language": language,
                 "review_type": "all",
                 "purchase_type": "all",
                 "num_per_page": 100,
@@ -126,7 +130,8 @@ def fetch_reviews(target_count: int = 200) -> pd.DataFrame:
                 break
 
             cursor = new_cursor
-            time.sleep(1)
+            if delay_seconds > 0:
+                time.sleep(delay_seconds)
 
     dataframe = pd.DataFrame(collected_reviews)
 
@@ -158,17 +163,59 @@ def fetch_reviews(target_count: int = 200) -> pd.DataFrame:
     return dataframe
 
 
-def main() -> None:
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Collect recent Steam reviews into a CSV file."
+    )
+    parser.add_argument(
+        "--app-id",
+        type=int,
+        default=DEFAULT_APP_ID,
+        help="Steam AppID to collect reviews for.",
+    )
+    parser.add_argument(
+        "--target-reviews",
+        type=int,
+        default=DEFAULT_TARGET_REVIEWS,
+        help="Maximum number of unique reviews to collect.",
+    )
+    parser.add_argument(
+        "--language",
+        default=DEFAULT_LANGUAGE,
+        help="Steam review language filter.",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=DEFAULT_OUTPUT_PATH,
+        help="CSV output path.",
+    )
+    parser.add_argument(
+        "--delay-seconds",
+        type=float,
+        default=1.0,
+        help="Delay between paginated requests.",
+    )
+    return parser.parse_args()
 
-    dataframe = fetch_reviews(TARGET_REVIEWS)
+
+def main() -> None:
+    args = parse_args()
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+
+    dataframe = fetch_reviews(
+        app_id=args.app_id,
+        target_count=args.target_reviews,
+        language=args.language,
+        delay_seconds=args.delay_seconds,
+    )
 
     if dataframe.empty:
         print("No reviews were collected.")
         return
 
     dataframe.to_csv(
-        OUTPUT_PATH,
+        args.output,
         index=False,
         encoding="utf-8-sig",
     )
@@ -176,7 +223,7 @@ def main() -> None:
     print("\nCollection completed.")
     print(f"Rows: {len(dataframe)}")
     print(f"Columns: {len(dataframe.columns)}")
-    print(f"Saved to: {OUTPUT_PATH}")
+    print(f"Saved to: {args.output}")
     print("\nPreview:")
     print(
         dataframe[
@@ -192,4 +239,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
