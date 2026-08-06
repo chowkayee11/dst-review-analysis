@@ -1,0 +1,3 @@
+review_category,review_count,mean_helpful_votes,median_helpful_votes,percentile_90_votes,maximum_helpful_votes,reviews_with_helpful_votes,helpful_vote_rate
+Recommended,4512,0.5935283687943262,0.0,1.0,496,627,0.1389627659574468
+Not recommended,462,0.9545454545454546,0.0,2.0,18,178,0.3852813852813853

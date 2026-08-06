@@ -1,0 +1,3 @@
+review_category,review_count,mean_word_count,median_word_count,percentile_25_words,percentile_75_words,percentile_90_words,maximum_word_count
+Recommended,4512,18.854166666666668,6.0,2.0,17.0,42.90000000000009,1087
+Not recommended,462,44.24242424242424,13.0,4.0,42.0,97.0,1449

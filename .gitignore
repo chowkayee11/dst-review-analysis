@@ -1,0 +1,10 @@
+.venv/
+.idea/
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
+*.pyc
+
+# Steam review text is regenerated with the collection script
+data/raw/*.csv
+data/processed/*.csv
