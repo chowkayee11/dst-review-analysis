@@ -34,6 +34,9 @@ segmented_reviews AS (
         tc.theme_count,
 
         CASE
+            WHEN r.playtime_at_review_hours IS NULL
+                THEN 'Unknown'
+
             WHEN r.playtime_at_review_hours < 2
                 THEN 'Under 2 hours'
 
@@ -50,6 +53,9 @@ segmented_reviews AS (
         END AS playtime_segment,
 
         CASE
+            WHEN r.playtime_at_review_hours IS NULL
+                THEN 0
+
             WHEN r.playtime_at_review_hours < 2
                 THEN 1
 
@@ -337,6 +343,9 @@ WITH segmented_reviews AS (
         recommended,
 
         CASE
+            WHEN playtime_at_review_hours IS NULL
+                THEN 'Unknown'
+
             WHEN playtime_at_review_hours < 2
                 THEN 'Under 2 hours'
 
@@ -353,6 +362,9 @@ WITH segmented_reviews AS (
         END AS playtime_segment,
 
         CASE
+            WHEN playtime_at_review_hours IS NULL
+                THEN 0
+
             WHEN playtime_at_review_hours < 2
                 THEN 1
 
@@ -468,6 +480,9 @@ ORDER BY
 WITH segmented_reviews AS (
     SELECT
         CASE
+            WHEN playtime_at_review_hours IS NULL
+                THEN 'Unknown'
+
             WHEN playtime_at_review_hours < 2
                 THEN 'Under 2 hours'
 
