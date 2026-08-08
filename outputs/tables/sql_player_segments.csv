@@ -1,0 +1,6 @@
+playtime_segment,total_reviews,positive_rate,average_review_words,helpful_vote_rate
+Under 2 hours,262,58.78,19.72,29.39
+2 to under 10 hours,1062,88.32,19.93,16.29
+10 to under 50 hours,1393,92.03,19.66,15.87
+50 to under 200 hours,1033,95.55,23.67,14.23
+200 hours or more,761,96.19,29.65,15.9

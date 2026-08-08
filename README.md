@@ -139,6 +139,69 @@ The most common issues in negative reviews were:
 
 The results suggest that difficulty is not always viewed negatively. Challenge appeared in both positive and negative reviews, while insufficient guidance and unclear progression were more strongly associated with negative feedback.
 
+## SQL Analysis
+
+A SQLite analysis module was added to demonstrate practical SQL skills using the processed English-language review dataset.
+
+The database contains three normalized tables:
+
+- `reviews`
+- `themes`
+- `review_themes`
+
+The SQL analysis includes:
+
+- Data quality checks
+- Monthly review metrics
+- Playtime-based review segmentation
+- Theme analysis using multi-table joins
+- Common Table Expressions
+- Conditional aggregation
+- Window functions including `LAG`, `RANK`, and `DENSE_RANK`
+
+### Key SQL Findings
+
+The SQL analysis was conducted on 4,511 English-language reviews.
+
+- The overall recommendation rate was 90.73%.
+- June 2026 had the highest review volume with 799 reviews.
+- Recommendation rate increased from 58.78% among reviews submitted before two hours of playtime to 96.19% among reviews submitted after 200 hours.
+- Negative reviews were more strongly associated with repetition, unclear progression, and onboarding problems.
+- `Repetition and boredom` had a negative-rate lift of 4.42.
+- `Progression and clarity` had a negative-rate lift of 3.54.
+- `Onboarding and guidance` had a negative-rate lift of 3.16.
+
+The SQL files are available in the `sql/` directory, while `notebooks/06_sql_analysis.ipynb` presents selected queries and interpretations.
+
+## Statistical Testing
+
+Statistical tests were used to evaluate whether several patterns identified during exploratory analysis were statistically meaningful.
+
+The tests were conducted on the full cleaned dataset of 4,974 reviews.
+
+### Main Results
+
+| Analysis | Test | Result | Effect size |
+|---|---|---|---|
+| Playtime by recommendation | Mann–Whitney U | p < 0.001 | Rank-biserial = 0.397 |
+| Review length by recommendation | Mann–Whitney U | p < 0.001 | Rank-biserial = -0.259 |
+| Helpful vote by recommendation | Chi-square | p < 0.001 | Cramér's V = 0.193 |
+| Recommendation rate by month | Chi-square | p = 0.916 | Cramér's V = 0.024 |
+
+### Interpretation
+
+Recommended reviews were submitted after a median of 32.84 hours of playtime, compared with 7.79 hours for non-recommended reviews.
+
+Non-recommended reviews were longer, with a median of 13 words compared with 6 words for recommended reviews.
+
+Negative reviews were also more likely to receive at least one helpful vote, with rates of 38.53% and 13.90% respectively.
+
+However, monthly recommendation rates did not differ significantly after incomplete months were excluded. This suggests that visible month-to-month fluctuations should not be interpreted as evidence of a systematic change in player sentiment.
+
+![Monthly positive rate confidence intervals](outputs/figures/17_monthly_positive_rate_confidence_intervals.png)
+
+The full statistical analysis is available in `notebooks/07_statistical_testing.ipynb`.
+
 ## Text Classification
 
 A TF-IDF logistic regression model was trained to predict whether a review was recommended. A separate training script also compares this model with a majority baseline, Multinomial Naive Bayes, and Linear SVM.
@@ -199,18 +262,28 @@ The error analysis shows that TF-IDF logistic regression can identify common sen
 ```text
 dst-review-analysis/
 ├── data/
-│   ├── raw/
-│   └── processed/
+│   ├── database/
+│   ├── processed/
+│   └── raw/
 ├── notebooks/
 │   ├── 01_data_quality_check.ipynb
 │   ├── 02_data_cleaning.ipynb
 │   ├── 03_exploratory_analysis.ipynb
 │   ├── 04_text_analysis.ipynb
-│   └── 05_text_classification.ipynb
+│   ├── 05_text_classification.ipynb
+│   ├── 06_sql_analysis.ipynb
+│   └── 07_statistical_testing.ipynb
 ├── outputs/
 │   ├── figures/
 │   └── tables/
+├── sql/
+│   ├── 01_create_tables.sql
+│   ├── 02_data_quality_checks.sql
+│   ├── 03_monthly_metrics.sql
+│   ├── 04_player_segmentation.sql
+│   └── 05_theme_analysis.sql
 ├── src/
+│   ├── build_sqlite_database.py
 │   ├── collect_reviews.py
 │   └── train_models.py
 ├── .gitignore

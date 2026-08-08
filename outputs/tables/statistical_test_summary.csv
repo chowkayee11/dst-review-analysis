@@ -1,0 +1,5 @@
+analysis,test,statistic,p_value,effect_size,effect_size_type
+Playtime by recommendation,Mann-Whitney U,1456263.5,4.866318856451278e-45,0.3972010185441037,Rank-biserial correlation
+Review length by recommendation,Mann-Whitney U,772837.5,3.8448600736336603e-20,-0.25850689647232206,Rank-biserial correlation
+Helpful vote by recommendation,Chi-square,185.63772760419857,2.84824799369895e-42,0.19318803776139198,Cramer's V
+Recommendation rate by month,Chi-square,2.642904503341884,0.9159574592566122,0.024226449003094785,Cramer's V

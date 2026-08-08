@@ -8,3 +8,8 @@ __pycache__/
 # Steam review text is regenerated with the collection script
 data/raw/*.csv
 data/processed/*.csv
+
+# Local SQLite database
+data/database/*.db
+data/database/*.sqlite
+data/database/*.sqlite3
